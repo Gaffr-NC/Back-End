@@ -69,13 +69,12 @@ const addMatch = async (landlordId, tenantId) => {
       console.log('match made, id: ', ref.id);
     });
 };
-const blockMatch = async (landlordId, tenantId) => {
+const blockMatch = async (matchId) => {
   admin
     .firestore()
     .collection('matches')
-    .where('landlordId', '==', landlordId)
-    .where('tenantId', '==', tenantId)
-    .update({ blocked: true });
+    .doc(matchId)
+    .update({ blocked: false });
 };
 const tenant = {
   email: 'hello@email.com',
@@ -108,4 +107,4 @@ const landlord = {
     },
   },
 };
-blockMatch('ujKvwwT8ylEiHwItDMbI', '5l9xNXQACXobrULFCPVh');
+blockMatch('13JfwO1SNvwMLeGg1Wph');
