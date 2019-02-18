@@ -59,10 +59,23 @@ const addMatch = async (landlordId, tenantId) => {
   await admin
     .firestore()
     .collection('matches')
-    .add({ landlordId, tenantId, chatHistory: [] })
+    .add({
+      landlordId,
+      tenantId,
+      chatHistory: [],
+      blocked: false,
+    })
     .then((ref) => {
       console.log('match made, id: ', ref.id);
     });
+};
+const blockMatch = async (landlordId, tenantId) => {
+  admin
+    .firestore()
+    .collection('matches')
+    .where('landlordId', '==', landlordId)
+    .where('tenantId', '==', tenantId)
+    .update({ blocked: true });
 };
 const tenant = {
   email: 'hello@email.com',
@@ -95,4 +108,4 @@ const landlord = {
     },
   },
 };
-addMatch('ujKvwwT8ylEiHwItDMbI', '5l9xNXQACXobrULFCPVh');
+blockMatch('ujKvwwT8ylEiHwItDMbI', '5l9xNXQACXobrULFCPVh');
