@@ -1,11 +1,8 @@
 const { ApolloServer, gql } = require('apollo-server');
-const admin = require('firebase-admin');
+const {
+  getTenants, getLandLords, getMatchesByLandlord, getMatchesByTenant,
+} = require('./utils');
 
-const serviceAccount = require('./service-account.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
 const typeDefs = gql`
   type Preferences {
     bedrooms: Int!
@@ -17,6 +14,7 @@ const typeDefs = gql`
   }
   #tenant
   type Tenant {
+    id: String
     name: String
     email: String
     phone: String
@@ -29,6 +27,7 @@ const typeDefs = gql`
     images: [String]
   }
   type Landlord {
+    id: String
     name: String
     email: String
     phone: String
@@ -46,7 +45,8 @@ const typeDefs = gql`
   }
 
   type Query {
-    matches: [Match]
+    matchesByTenant(tenantId: String!): [Match]
+    matchesByLandlord(landlordId: String!): [Match]
     tenants: [Tenant]
     landlords: [Landlord]
     tenant(id: String!): Tenant
@@ -57,25 +57,20 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     async tenants() {
-      const tenants = await admin
-        .firestore()
-        .collection('tenants')
-        .get();
-      return tenants.docs.map(tenant => tenant.data());
+      const tenants = await getTenants();
+      return tenants;
     },
     async landlords() {
-      const landlords = await admin
-        .firestore()
-        .collection('landlords')
-        .get();
-      return landlords.docs.map(landlord => landlord.data());
+      const landlords = await getLandLords();
+      return landlords;
     },
-    async matches() {
-      const matches = await admin
-        .firestore()
-        .collection('matches')
-        .get();
-      return matches.docs.map(match => match.data());
+    async matchesByTenant(_, { tenantId }) {
+      const matches = await getMatchesByTenant(tenantId);
+      return matches;
+    },
+    async matchesByLandlord(_, { landlordId }) {
+      const matches = await getMatchesByLandlord(landlordId);
+      return matches;
     },
   },
 };
