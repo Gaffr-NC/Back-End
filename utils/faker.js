@@ -1,11 +1,8 @@
 const faker = require('faker');
-const Unsplash = require('unsplash-js').default;
-const { toJson } = require('unsplash-js');
 const axios = require('axios');
 const { addTenant, addLandlord } = require('./index');
-const { APP_ACCESS_KEY, APP_SECRET } = require('../apiconfig');
+const { APP_ACCESS_KEY } = require('../apiconfig');
 
-const unsplash = new Unsplash({ applicationId: APP_ACCESS_KEY, secret: APP_SECRET });
 const cities = ['manchester', 'london', 'leeds', 'birmingham'];
 const randomSelector = arr => arr[Math.floor(Math.random() * arr.length)];
 
