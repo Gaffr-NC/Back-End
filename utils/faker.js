@@ -53,10 +53,11 @@ const fakeLandlord = async () => {
       smokingAllowed: !randBool,
     },
   };
-  console.log(landlord);
   return landlord;
 };
 
 // for (let i = 0; i < 10; i += 1) {
 //   fakeLandlord().then(landlord => addLandlord(landlord));
 // }
+
+module.exports = { fakeTenant, fakeLandlord };
