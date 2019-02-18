@@ -46,6 +46,24 @@ const addTenant = async (tenant) => {
       console.log('added document with ID: ', ref.id);
     });
 };
+const addLandlord = async (landlord) => {
+  await admin
+    .firestore()
+    .collection('landlords')
+    .add(landlord)
+    .then((ref) => {
+      console.log('added document with ID: ', ref.id);
+    });
+};
+const addMatch = async (landlordId, tenantId) => {
+  await admin
+    .firestore()
+    .collection('matches')
+    .add({ landlordId, tenantId, chatHistory: [] })
+    .then((ref) => {
+      console.log('match made, id: ', ref.id);
+    });
+};
 const tenant = {
   email: 'hello@email.com',
   name: 'mr house man',
@@ -58,5 +76,23 @@ const tenant = {
     petsAllowed: true,
   },
 };
-
-addTenant(tenant);
+const landlord = {
+  email: 'land@lord.net',
+  name: 'lord Land',
+  phone: '01617247386',
+  property: {
+    images: [
+      'https://urbangauge.com/wp-content/uploads/2018/06/flat.jpg',
+      'https://www.rightmove.co.uk/news/wp-content/uploads/2018/03/61682_3995232_IMG_01_0000.jpg',
+    ],
+    description: 'a flat',
+    preferences: {
+      bedrooms: 1,
+      city: 'london',
+      petsAllowed: true,
+      price: 400,
+      propertyType: 'flat',
+    },
+  },
+};
+addMatch('ujKvwwT8ylEiHwItDMbI', '5l9xNXQACXobrULFCPVh');
