@@ -28,8 +28,7 @@
   },
   "husky": {
     "hooks": {
-      "precommit": "npm t",
-      "posttest": "eslint ./ --fix"
+      "pre-commit": "npm t && eslint ./ --fix"
     }
   },
   "dependencies": {

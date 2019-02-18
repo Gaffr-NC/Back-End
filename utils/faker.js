@@ -1,6 +1,6 @@
 const faker = require('faker');
 const axios = require('axios');
-const { addTenant, addLandlord } = require('./index');
+// const { addTenant, addLandlord } = require('./index');
 const { APP_ACCESS_KEY } = require('../apiconfig');
 
 const cities = ['manchester', 'london', 'leeds', 'birmingham'];
@@ -55,9 +55,5 @@ const fakeLandlord = async () => {
   };
   return landlord;
 };
-
-// for (let i = 0; i < 10; i += 1) {
-//   fakeLandlord().then(landlord => addLandlord(landlord));
-// }
 
 module.exports = { fakeTenant, fakeLandlord };
