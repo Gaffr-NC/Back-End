@@ -29,5 +29,9 @@
       "precommit": "npm t",
       "posttest": "eslint ./ --fix"
     }
+  },
+  "dependencies": {
+    "apollo-server": "^2.4.2",
+    "firebase-admin": "^7.0.0"
   }
 }
