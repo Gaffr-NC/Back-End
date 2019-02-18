@@ -96,3 +96,16 @@ const deleteTenant = async (tenantId) => {
     .doc(tenantId)
     .delete();
 };
+
+module.exports = {
+  deleteLandlord,
+  deleteTenant,
+  blockMatch,
+  addMatch,
+  addLandlord,
+  addTenant,
+  getLandLords,
+  getTenants,
+  getMatchesByLandlord,
+  getMatchesByTenant,
+};

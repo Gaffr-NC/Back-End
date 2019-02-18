@@ -32,6 +32,9 @@
   },
   "dependencies": {
     "apollo-server": "^2.4.2",
-    "firebase-admin": "^7.0.0"
+    "axios": "^0.18.0",
+    "faker": "^4.1.0",
+    "firebase-admin": "^7.0.0",
+    "unsplash-js": "^4.8.0"
   }
 }
