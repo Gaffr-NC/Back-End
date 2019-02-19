@@ -1,6 +1,6 @@
 const faker = require('faker');
 const axios = require('axios');
-const { addTenant, addLandlord } = require('./index');
+// const { addTenant, addLandlord } = require('./index');
 const { APP_ACCESS_KEY } = require('../apiconfig');
 
 const cities = ['manchester', 'london', 'leeds', 'birmingham'];
@@ -24,7 +24,6 @@ const fakeTenant = () => {
   };
   return tenant;
 };
-addTenant(fakeTenant());
 const fakeLandlord = async () => {
   const BASE_URL = 'https://api.unsplash.com/search/photos/';
   const properties = ['house', 'flat', 'apartment', 'bungalow', 'mansion'];
@@ -55,10 +54,5 @@ const fakeLandlord = async () => {
   };
   return landlord;
 };
-
-for (i = 0; i < 10; i++) {
-  addTenant(fakeTenant());
-  fakeTenant();
-}
 
 module.exports = { fakeTenant, fakeLandlord };

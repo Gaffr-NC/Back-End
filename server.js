@@ -9,6 +9,8 @@ const {
   getTenantById,
   getLandLordById,
   addTenant,
+  addLandlord,
+  addMatch,
 } = require('./utils');
 
 const typeDefs = gql`
@@ -65,7 +67,7 @@ const typeDefs = gql`
     tenant(id: String!): Tenant
     landlord(id: String!): Landlord
   }
-  input UserPreferences {
+  input TenantPreferences {
     bedrooms: Int!
     city: String
     maxPrice: Int
@@ -73,19 +75,40 @@ const typeDefs = gql`
     smokingAllowed: Boolean
     petsAllowed: Boolean
   }
-  input UserInput {
+  input LandlordProperty {
+    bedrooms: Int
+    description: String
+    images: [String]
+    price: Int
+    petsAllowed: Boolean
+    smokingAllowed: Boolean
+    propertyType: String
+    city: String
+  }
+  input TenantInput {
     name: String
     email: String
     phone: String
-    preferences: UserPreferences
+    preferences: TenantPreferences
+  }
+  input LandlordInput {
+    name: String
+    email: String
+    phone: String
+    property: LandlordProperty
+  }
+  input MatchInput {
+    landlordId: String
+    tenantId: String
   }
   type Mutation {
-    createTenant(input: UserInput): Tenant
+    createTenant(input: TenantInput): Tenant
+    createLandlord(input: LandlordInput): Landlord
+    createMatch(input: MatchInput): Match
   }
 `;
 
 const resolvers = {
-  // TODO: single tenant/landlord queries
   Query: {
     async tenants() {
       try {
@@ -116,7 +139,7 @@ const resolvers = {
         const matches = await getMatchesByLandlord(landlordId);
         return matches.length ? matches : new ValidationError('No matches for that landlord.');
       } catch (error) {
-        throw new ApolloError();
+        throw new ApolloError(error);
       }
     },
     async tenant(_, { id }) {
@@ -141,14 +164,32 @@ const resolvers = {
       try {
         const tenantJSON = JSON.parse(JSON.stringify(input));
         addTenant(tenantJSON);
-
         return tenantJSON || new ValidationError('Tenant not added.');
       } catch (error) {
         throw new ApolloError(error);
       }
     },
+    async createLandlord(_, { input }) {
+      try {
+        const landlordJSON = JSON.parse(JSON.stringify(input));
+        addLandlord(landlordJSON);
+        return landlordJSON || new ValidationError('landlord not added.');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+    async createMatch(_, { input }) {
+      try {
+        const matchJSON = JSON.parse(JSON.stringify(input));
+        const { landlordId, tenantId } = matchJSON;
+        addMatch(landlordId, tenantId);
+        return matchJSON;
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
   },
-  // TODO: Add new tenant, add new landlord, make a match
+  // TODO:  make a match
 };
 
 const server = new ApolloServer({
