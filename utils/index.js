@@ -12,7 +12,7 @@ const getTenants = async () => {
   return tenants.docs.map(tenant => ({ ...tenant.data(), id: tenant.id }));
 };
 
-const getTenantById = async (id) => {
+const getTenantById = async id => {
   const tenant = await admin
     .firestore()
     .doc(`tenants/${id}`)
@@ -27,11 +27,19 @@ const getLandLords = async () => {
     .get();
   return landlords.docs.map(landlord => ({
     ...landlord.data(),
-    id: landlord.id,
+    id: landlord.id
   }));
 };
 
-const getMatchesByLandlord = async (landlordId) => {
+const getLandLordById = async id => {
+  const landlord = await admin
+    .firestore()
+    .doc(`landlords/${id}`)
+    .get();
+  return landlord.data();
+};
+
+const getMatchesByLandlord = async landlordId => {
   const matches = await admin
     .firestore()
     .collection('matches')
@@ -40,7 +48,7 @@ const getMatchesByLandlord = async (landlordId) => {
   return matches.docs.map(match => match.data());
 };
 
-const getMatchesByTenant = async (tenantId) => {
+const getMatchesByTenant = async tenantId => {
   const matches = await admin
     .firestore()
     .collection('matches')
@@ -49,22 +57,22 @@ const getMatchesByTenant = async (tenantId) => {
   return matches.docs.map(match => ({ ...match.data(), id: match.id }));
 };
 
-const addTenant = async (tenant) => {
+const addTenant = async tenant => {
   await admin
     .firestore()
     .collection('tenants')
     .add(tenant)
-    .then((ref) => {
+    .then(ref => {
       console.log('added document with ID: ', ref.id);
     });
 };
 
-const addLandlord = async (landlord) => {
+const addLandlord = async landlord => {
   await admin
     .firestore()
     .collection('landlords')
     .add(landlord)
-    .then((ref) => {
+    .then(ref => {
       console.log('added document with ID: ', ref.id);
     });
 };
@@ -77,14 +85,14 @@ const addMatch = async (landlordId, tenantId) => {
       landlordId,
       tenantId,
       chatHistory: [],
-      blocked: false,
+      blocked: false
     })
-    .then((ref) => {
+    .then(ref => {
       console.log('match made, id: ', ref.id);
     });
 };
 
-const blockMatch = async (matchId) => {
+const blockMatch = async matchId => {
   admin
     .firestore()
     .collection('matches')
@@ -92,7 +100,7 @@ const blockMatch = async (matchId) => {
     .update({ blocked: false });
 };
 
-const deleteLandlord = async (landlordId) => {
+const deleteLandlord = async landlordId => {
   admin
     .firestore()
     .collection('landlords')
@@ -100,7 +108,7 @@ const deleteLandlord = async (landlordId) => {
     .delete();
 };
 
-const deleteTenant = async (tenantId) => {
+const deleteTenant = async tenantId => {
   admin
     .firestore()
     .collection('tenants')
@@ -120,6 +128,7 @@ module.exports = {
   getMatchesByLandlord,
   getMatchesByTenant,
   getTenantById,
+  getLandLordById
 };
 
 // getTenantById('3oFdQ2X3q0IeTKRo3L2I');
