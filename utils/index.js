@@ -58,13 +58,12 @@ const getMatchesByTenant = async (tenantId) => {
 };
 
 const addTenant = async (tenant) => {
-  await admin
+  const tenantRef = await admin
     .firestore()
     .collection('tenants')
-    .add(tenant)
-    .then((ref) => {
-      console.log('added document with ID: ', ref.id);
-    });
+    .add(tenant);
+  console.log('added tenant with id: ', tenantRef.id);
+  return tenantRef.id;
 };
 
 const addLandlord = async (landlord) => {

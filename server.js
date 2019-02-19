@@ -1,8 +1,5 @@
 const {
-  ApolloServer,
-  gql,
-  ApolloError,
-  ValidationError,
+  ApolloServer, gql, ApolloError, ValidationError,
 } = require('apollo-server');
 const {
   getTenants,
@@ -11,6 +8,7 @@ const {
   getMatchesByTenant,
   getTenantById,
   getLandLordById,
+  addTenant,
 } = require('./utils');
 
 const typeDefs = gql`
@@ -67,6 +65,23 @@ const typeDefs = gql`
     tenant(id: String!): Tenant
     landlord(id: String!): Landlord
   }
+  input UserPreferences {
+    bedrooms: Int!
+    city: String
+    maxPrice: Int
+    minPrice: Int
+    smokingAllowed: Boolean
+    petsAllowed: Boolean
+  }
+  input UserInput {
+    name: String
+    email: String
+    phone: String
+    preferences: UserPreferences
+  }
+  type Mutation {
+    createTenant(input: UserInput): Tenant
+  }
 `;
 
 const resolvers = {
@@ -91,9 +106,7 @@ const resolvers = {
     async matchesByTenant(_, { tenantId }) {
       try {
         const matches = await getMatchesByTenant(tenantId);
-        return matches.length
-          ? matches
-          : new ValidationError('No matches for that tenant.');
+        return matches.length ? matches : new ValidationError('No matches for that tenant.');
       } catch (error) {
         throw new ApolloError(error);
       }
@@ -101,9 +114,7 @@ const resolvers = {
     async matchesByLandlord(_, { landlordId }) {
       try {
         const matches = await getMatchesByLandlord(landlordId);
-        return matches.length
-          ? matches
-          : new ValidationError('No matches for that landlord.');
+        return matches.length ? matches : new ValidationError('No matches for that landlord.');
       } catch (error) {
         throw new ApolloError();
       }
@@ -120,6 +131,18 @@ const resolvers = {
       try {
         const landlord = await getLandLordById(id);
         return landlord || new ValidationError('Not found.');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+  },
+  Mutation: {
+    async createTenant(_, { input }) {
+      try {
+        const tenantJSON = JSON.parse(JSON.stringify(input));
+        addTenant(tenantJSON);
+
+        return tenantJSON || new ValidationError('Tenant not added.');
       } catch (error) {
         throw new ApolloError(error);
       }
