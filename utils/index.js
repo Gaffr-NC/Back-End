@@ -4,39 +4,20 @@ const serviceAccount = require('../service-account.json');
 
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 
-const getTenants = async () => {
-  const tenants = await admin
+const getUsers = async (table) => {
+  const users = await admin
     .firestore()
-    .collection('tenants')
+    .collection(table)
     .get();
-  return tenants.docs.map(tenant => ({ ...tenant.data(), id: tenant.id }));
+  return users.docs.map(user => ({ ...user.data(), id: user.id }));
 };
 
-const getTenantById = async (id) => {
-  const tenant = await admin
+const getUserById = async (id, table) => {
+  const user = await admin
     .firestore()
-    .doc(`tenants/${id}`)
+    .doc(`${table}/${id}`)
     .get();
-  return tenant.data();
-};
-
-const getLandLords = async () => {
-  const landlords = await admin
-    .firestore()
-    .collection('landlords')
-    .get();
-  return landlords.docs.map(landlord => ({
-    ...landlord.data(),
-    id: landlord.id,
-  }));
-};
-
-const getLandLordById = async (id) => {
-  const landlord = await admin
-    .firestore()
-    .doc(`landlords/${id}`)
-    .get();
-  return landlord.data();
+  return user.data();
 };
 
 const getMatchesByLandlord = async (landlordId) => {
@@ -45,7 +26,7 @@ const getMatchesByLandlord = async (landlordId) => {
     .collection('matches')
     .where('landlordId', '==', landlordId)
     .get();
-  return matches.docs.map(match => match.data());
+  return matches.docs.map(match => ({ ...match.data(), id: match.id }));
 };
 
 const getMatchesByTenant = async (tenantId) => {
@@ -57,22 +38,13 @@ const getMatchesByTenant = async (tenantId) => {
   return matches.docs.map(match => ({ ...match.data(), id: match.id }));
 };
 
-const addTenant = async (tenant) => {
-  const tenantRef = await admin
+const addUser = async (user, table) => {
+  const userRef = await admin
     .firestore()
-    .collection('tenants')
-    .add(tenant);
-  console.log('added tenant with id: ', tenantRef.id);
-  return tenantRef.id;
-};
-
-const addLandlord = async (landlord) => {
-  const landlordRef = await admin
-    .firestore()
-    .collection('landlords')
-    .add(landlord);
-  console.log('added landlord with id: ', landlordRef.id);
-  return landlordRef.id;
+    .collection(table)
+    .add(user);
+  console.log(`added user to ${table} with id: ${userRef.id}`);
+  return userRef.id;
 };
 
 const addMatch = async (landlordId, tenantId) => {
@@ -98,35 +70,21 @@ const blockMatch = async (matchId) => {
     .update({ blocked: false });
 };
 
-const deleteLandlord = async (landlordId) => {
+const deleteUserById = async (id, table) => {
   admin
     .firestore()
-    .collection('landlords')
-    .doc(landlordId)
-    .delete();
-};
-
-const deleteTenant = async (tenantId) => {
-  admin
-    .firestore()
-    .collection('tenants')
-    .doc(tenantId)
+    .collection(table)
+    .doc(id)
     .delete();
 };
 
 module.exports = {
-  deleteLandlord,
-  deleteTenant,
+  deleteUserById,
   blockMatch,
   addMatch,
-  addLandlord,
-  addTenant,
-  getLandLords,
-  getTenants,
+  addUser,
+  getUsers,
   getMatchesByLandlord,
   getMatchesByTenant,
-  getTenantById,
-  getLandLordById,
+  getUserById,
 };
-
-// getTenantById('3oFdQ2X3q0IeTKRo3L2I');
