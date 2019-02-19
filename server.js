@@ -10,6 +10,7 @@ const {
   getLandLordById,
   addTenant,
   addLandlord,
+  addMatch,
 } = require('./utils');
 
 const typeDefs = gql`
@@ -96,14 +97,18 @@ const typeDefs = gql`
     phone: String
     property: LandlordProperty
   }
+  input MatchInput {
+    landlordId: String
+    tenantId: String
+  }
   type Mutation {
     createTenant(input: TenantInput): Tenant
     createLandlord(input: LandlordInput): Landlord
+    createMatch(input: MatchInput): Match
   }
 `;
 
 const resolvers = {
-  // TODO: single tenant/landlord queries
   Query: {
     async tenants() {
       try {
@@ -134,7 +139,7 @@ const resolvers = {
         const matches = await getMatchesByLandlord(landlordId);
         return matches.length ? matches : new ValidationError('No matches for that landlord.');
       } catch (error) {
-        throw new ApolloError();
+        throw new ApolloError(error);
       }
     },
     async tenant(_, { id }) {
@@ -173,8 +178,18 @@ const resolvers = {
         throw new ApolloError(error);
       }
     },
+    async createMatch(_, { input }) {
+      try {
+        const matchJSON = JSON.parse(JSON.stringify(input));
+        const { landlordId, tenantId } = matchJSON;
+        addMatch(landlordId, tenantId);
+        return matchJSON;
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
   },
-  // TODO: Add new tenant, add new landlord, make a match
+  // TODO:  make a match
 };
 
 const server = new ApolloServer({
