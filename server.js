@@ -2,7 +2,13 @@ const {
   ApolloServer, gql, ApolloError, ValidationError,
 } = require('apollo-server');
 const {
-  getTenants, getLandLords, getMatchesByLandlord, getMatchesByTenant,
+  getTenants,
+  getLandLords,
+  getMatchesByLandlord,
+  getMatchesByTenant,
+  getTenantById,
+  getLandLordById,
+  addTenant,
 } = require('./utils');
 
 const typeDefs = gql`
@@ -59,6 +65,23 @@ const typeDefs = gql`
     tenant(id: String!): Tenant
     landlord(id: String!): Landlord
   }
+  input UserPreferences {
+    bedrooms: Int!
+    city: String
+    maxPrice: Int
+    minPrice: Int
+    smokingAllowed: Boolean
+    petsAllowed: Boolean
+  }
+  input UserInput {
+    name: String
+    email: String
+    phone: String
+    preferences: UserPreferences
+  }
+  type Mutation {
+    createTenant(input: UserInput): Tenant
+  }
 `;
 
 const resolvers = {
@@ -94,6 +117,34 @@ const resolvers = {
         return matches.length ? matches : new ValidationError('No matches for that landlord.');
       } catch (error) {
         throw new ApolloError();
+      }
+    },
+    async tenant(_, { id }) {
+      try {
+        const tenant = await getTenantById(id);
+        return tenant || new ValidationError('Not found.');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+    async landlord(_, { id }) {
+      try {
+        const landlord = await getLandLordById(id);
+        return landlord || new ValidationError('Not found.');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+  },
+  Mutation: {
+    async createTenant(_, { input }) {
+      try {
+        const tenantJSON = JSON.parse(JSON.stringify(input));
+        addTenant(tenantJSON);
+
+        return tenantJSON || new ValidationError('Tenant not added.');
+      } catch (error) {
+        throw new ApolloError(error);
       }
     },
   },

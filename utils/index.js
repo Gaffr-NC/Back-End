@@ -12,12 +12,31 @@ const getTenants = async () => {
   return tenants.docs.map(tenant => ({ ...tenant.data(), id: tenant.id }));
 };
 
+const getTenantById = async (id) => {
+  const tenant = await admin
+    .firestore()
+    .doc(`tenants/${id}`)
+    .get();
+  return tenant.data();
+};
+
 const getLandLords = async () => {
   const landlords = await admin
     .firestore()
     .collection('landlords')
     .get();
-  return landlords.docs.map(landlord => ({ ...landlord.data(), id: landlord.id }));
+  return landlords.docs.map(landlord => ({
+    ...landlord.data(),
+    id: landlord.id,
+  }));
+};
+
+const getLandLordById = async (id) => {
+  const landlord = await admin
+    .firestore()
+    .doc(`landlords/${id}`)
+    .get();
+  return landlord.data();
 };
 
 const getMatchesByLandlord = async (landlordId) => {
@@ -39,13 +58,12 @@ const getMatchesByTenant = async (tenantId) => {
 };
 
 const addTenant = async (tenant) => {
-  await admin
+  const tenantRef = await admin
     .firestore()
     .collection('tenants')
-    .add(tenant)
-    .then((ref) => {
-      console.log('added document with ID: ', ref.id);
-    });
+    .add(tenant);
+  console.log('added tenant with id: ', tenantRef.id);
+  return tenantRef.id;
 };
 
 const addLandlord = async (landlord) => {
@@ -108,4 +126,8 @@ module.exports = {
   getTenants,
   getMatchesByLandlord,
   getMatchesByTenant,
+  getTenantById,
+  getLandLordById,
 };
+
+// getTenantById('3oFdQ2X3q0IeTKRo3L2I');
