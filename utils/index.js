@@ -71,11 +71,12 @@ const blockMatch = async (matchId) => {
 };
 
 const deleteUserById = async (id, table) => {
-  admin
+  const value = await admin
     .firestore()
     .collection(table)
     .doc(id)
     .delete();
+  console.log(value);
 };
 
 module.exports = {
