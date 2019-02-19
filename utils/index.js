@@ -38,13 +38,15 @@ const getMatchesByTenant = async (tenantId) => {
   return matches.docs.map(match => ({ ...match.data(), id: match.id }));
 };
 
-const addUser = async (user, table) => {
+// ID comes from auth as UID
+const addUser = async (id, user, table) => {
   const userRef = await admin
     .firestore()
     .collection(table)
-    .add(user);
-  console.log(`added user to ${table} with id: ${userRef.id}`);
-  return userRef.id;
+    .doc(id)
+    .set(user);
+  console.log(`added user to ${table} with id: ${id}`);
+  return userRef;
 };
 
 const addMatch = async (landlordId, tenantId) => {
@@ -62,6 +64,42 @@ const addMatch = async (landlordId, tenantId) => {
     });
 };
 
+const updateUserContact = async (id, user, table) => {
+  const userRef = await admin
+    .firestore()
+    .collection(table)
+    .doc(id);
+  await userRef.update(user);
+  return userRef.id;
+};
+const updateProperty = async (id, property) => {
+  const keys = Object.keys(property).map(key => `property.${key}`);
+  const values = Object.values(property);
+  const updatedObj = {};
+  keys.forEach((key, index) => {
+    updatedObj[key] = values[index];
+  });
+  const landlordRef = await admin
+    .firestore()
+    .collection('landlords')
+    .doc(id);
+  await landlordRef.update(updatedObj);
+  return landlordRef.id;
+};
+const updatePreferences = async (id, preferences) => {
+  const keys = Object.keys(preferences).map(key => `preferences.${key}`);
+  const values = Object.values(preferences);
+  const updatedObj = {};
+  keys.forEach((key, index) => {
+    updatedObj[key] = values[index];
+  });
+  const tenantRef = await admin
+    .firestore()
+    .collection('tenants')
+    .doc(id);
+  await tenantRef.update(updatedObj);
+  return tenantRef.id;
+};
 const blockMatch = async (matchId) => {
   admin
     .firestore()
@@ -88,4 +126,7 @@ module.exports = {
   getMatchesByLandlord,
   getMatchesByTenant,
   getUserById,
+  updateUserContact,
+  updateProperty,
+  updatePreferences,
 };
