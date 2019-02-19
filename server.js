@@ -1,8 +1,15 @@
 const {
-  ApolloServer, gql, ApolloError, ValidationError,
+  ApolloServer,
+  gql,
+  ApolloError,
+  ValidationError
 } = require('apollo-server');
 const {
-  getTenants, getLandLords, getMatchesByLandlord, getMatchesByTenant,
+  getTenants,
+  getLandLords,
+  getMatchesByLandlord,
+  getMatchesByTenant,
+  getTenantById
 } = require('./utils');
 
 const typeDefs = gql`
@@ -83,7 +90,9 @@ const resolvers = {
     async matchesByTenant(_, { tenantId }) {
       try {
         const matches = await getMatchesByTenant(tenantId);
-        return matches.length ? matches : new ValidationError('No matches for that tenant.');
+        return matches.length
+          ? matches
+          : new ValidationError('No matches for that tenant.');
       } catch (error) {
         throw new ApolloError(error);
       }
@@ -91,19 +100,29 @@ const resolvers = {
     async matchesByLandlord(_, { landlordId }) {
       try {
         const matches = await getMatchesByLandlord(landlordId);
-        return matches.length ? matches : new ValidationError('No matches for that landlord.');
+        return matches.length
+          ? matches
+          : new ValidationError('No matches for that landlord.');
       } catch (error) {
         throw new ApolloError();
       }
     },
-  },
+    async tenant(_, { id }) {
+      try {
+        const tenant = await getTenantById(id);
+        return tenant || new ValidationError('Not found.');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    }
+  }
   // TODO: Add new tenant, add new landlord, make a match
 };
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  introspection: true,
+  introspection: true
 });
 
 server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
