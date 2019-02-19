@@ -53,10 +53,12 @@ const typeDefs = gql`
     landlords: [Landlord]
     tenant(id: String!): Tenant
     landlord(id: String!): Landlord
+    suitableLandlords(input: TenantPreferences): [Landlord]
   }
   input TenantPreferences {
-    bedrooms: Int!
+    bedrooms: Int
     city: String
+    propertyType: String
     maxPrice: Int
     minPrice: Int
     smokingAllowed: Boolean

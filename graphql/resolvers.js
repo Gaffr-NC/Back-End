@@ -4,6 +4,7 @@ const {
   getUsers,
   getMatchesByLandlord,
   getMatchesByTenant,
+  getSuitableLandlords,
   getUserById,
   addUser,
   addMatch,
@@ -27,6 +28,14 @@ const resolvers = {
       try {
         const landlords = await getUsers('landlords');
         return landlords;
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+    async suitableLandlords(_, { input }) {
+      try {
+        const properties = await getSuitableLandlords(input);
+        return properties;
       } catch (error) {
         throw new ApolloError(error);
       }
