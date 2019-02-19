@@ -38,13 +38,15 @@ const getMatchesByTenant = async (tenantId) => {
   return matches.docs.map(match => ({ ...match.data(), id: match.id }));
 };
 
-const addUser = async (user, table) => {
+// ID comes from auth as UID
+const addUser = async (id, user, table) => {
   const userRef = await admin
     .firestore()
     .collection(table)
-    .add(user);
-  console.log(`added user to ${table} with id: ${userRef.id}`);
-  return userRef.id;
+    .doc(id)
+    .set(user);
+  console.log(`added user to ${table} with id: ${id}`);
+  return userRef;
 };
 
 const addMatch = async (landlordId, tenantId) => {
@@ -60,6 +62,15 @@ const addMatch = async (landlordId, tenantId) => {
     .then((ref) => {
       console.log('match made, id: ', ref.id);
     });
+};
+
+const updateUserContact = async (id, user, table) => {
+  const userRef = await admin
+    .firestore()
+    .collection(table)
+    .doc(id);
+  await userRef.update(user);
+  return userRef.id;
 };
 
 const blockMatch = async (matchId) => {
@@ -88,4 +99,5 @@ module.exports = {
   getMatchesByLandlord,
   getMatchesByTenant,
   getUserById,
+  updateUserContact,
 };

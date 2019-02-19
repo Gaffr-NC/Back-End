@@ -7,6 +7,7 @@ const {
   getUserById,
   addUser,
   addMatch,
+  updateUserContact,
   deleteUserById,
 } = require('./utils');
 
@@ -98,10 +99,16 @@ const typeDefs = gql`
     landlordId: String
     tenantId: String
   }
+  input contactInput {
+    name: String
+    phone: String
+    email: String
+  }
   type Mutation {
-    createTenant(input: TenantInput): Tenant
-    createLandlord(input: LandlordInput): Landlord
+    createTenant(input: TenantInput, id: String): Tenant
+    createLandlord(input: LandlordInput, id: String): Landlord
     createMatch(input: MatchInput): Match
+    updateTenantContact(input: contactInput, id: String): String
     deleteTenant(input: String): String
     deleteLandlord(input: String): String
   }
@@ -159,19 +166,19 @@ const resolvers = {
     },
   },
   Mutation: {
-    async createTenant(_, { input }) {
+    async createTenant(_, { input, id }) {
       try {
         const tenantJSON = JSON.parse(JSON.stringify(input));
-        addUser(tenantJSON, 'tenants');
+        addUser(id, tenantJSON, 'tenants');
         return tenantJSON || new ValidationError('Tenant not added.');
       } catch (error) {
         throw new ApolloError(error);
       }
     },
-    async createLandlord(_, { input }) {
+    async createLandlord(_, { input, id }) {
       try {
         const landlordJSON = JSON.parse(JSON.stringify(input));
-        addUser(landlordJSON, 'landlords');
+        addUser(id, landlordJSON, 'landlords');
         return landlordJSON || new ValidationError('landlord not added.');
       } catch (error) {
         throw new ApolloError(error);
@@ -183,6 +190,15 @@ const resolvers = {
         const { landlordId, tenantId } = matchJSON;
         addMatch(landlordId, tenantId);
         return matchJSON;
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+    async updateTenantContact(_, { id, input }) {
+      try {
+        const contactJSON = JSON.parse(JSON.stringify(input));
+        const updatedUser = await updateUserContact(id, contactJSON, 'tenants');
+        return updatedUser || new ValidationError('User not updated');
       } catch (error) {
         throw new ApolloError(error);
       }
