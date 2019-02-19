@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha spec",
     "lint": "eslint ./ --fix",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
