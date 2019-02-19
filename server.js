@@ -2,14 +2,14 @@ const {
   ApolloServer,
   gql,
   ApolloError,
-  ValidationError
+  ValidationError,
 } = require('apollo-server');
 const {
   getTenants,
   getLandLords,
   getMatchesByLandlord,
   getMatchesByTenant,
-  getTenantById
+  getTenantById,
 } = require('./utils');
 
 const typeDefs = gql`
@@ -114,15 +114,15 @@ const resolvers = {
       } catch (error) {
         throw new ApolloError(error);
       }
-    }
-  }
+    },
+  },
   // TODO: Add new tenant, add new landlord, make a match
 };
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  introspection: true
+  introspection: true,
 });
 
 server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
