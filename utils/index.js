@@ -9,7 +9,7 @@ const getTenants = async () => {
     .firestore()
     .collection('tenants')
     .get();
-  return tenants.docs.map(tenant => tenant.data());
+  return tenants.docs.map(tenant => ({ ...tenant.data(), id: tenant.id }));
 };
 
 const getLandLords = async () => {
@@ -17,7 +17,7 @@ const getLandLords = async () => {
     .firestore()
     .collection('landlords')
     .get();
-  return landlords.docs.map(landlord => landlord.data());
+  return landlords.docs.map(landlord => ({ ...landlord.data(), id: landlord.id }));
 };
 
 const getMatchesByLandlord = async (landlordId) => {
@@ -35,7 +35,7 @@ const getMatchesByTenant = async (tenantId) => {
     .collection('matches')
     .where('tenantId', '==', tenantId)
     .get();
-  return matches.docs.map(match => match.data());
+  return matches.docs.map(match => ({ ...match.data(), id: match.id }));
 };
 
 const addTenant = async (tenant) => {
