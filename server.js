@@ -9,6 +9,7 @@ const {
   getTenantById,
   getLandLordById,
   addTenant,
+  addLandlord,
 } = require('./utils');
 
 const typeDefs = gql`
@@ -65,7 +66,7 @@ const typeDefs = gql`
     tenant(id: String!): Tenant
     landlord(id: String!): Landlord
   }
-  input UserPreferences {
+  input TenantPreferences {
     bedrooms: Int!
     city: String
     maxPrice: Int
@@ -73,14 +74,31 @@ const typeDefs = gql`
     smokingAllowed: Boolean
     petsAllowed: Boolean
   }
-  input UserInput {
+  input LandlordProperty {
+    bedrooms: Int
+    description: String
+    images: [String]
+    price: Int
+    petsAllowed: Boolean
+    smokingAllowed: Boolean
+    propertyType: String
+    city: String
+  }
+  input TenantInput {
     name: String
     email: String
     phone: String
-    preferences: UserPreferences
+    preferences: TenantPreferences
+  }
+  input LandlordInput {
+    name: String
+    email: String
+    phone: String
+    property: LandlordProperty
   }
   type Mutation {
-    createTenant(input: UserInput): Tenant
+    createTenant(input: TenantInput): Tenant
+    createLandlord(input: LandlordInput): Landlord
   }
 `;
 
@@ -141,8 +159,16 @@ const resolvers = {
       try {
         const tenantJSON = JSON.parse(JSON.stringify(input));
         addTenant(tenantJSON);
-
         return tenantJSON || new ValidationError('Tenant not added.');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+    async createLandlord(_, { input }) {
+      try {
+        const landlordJSON = JSON.parse(JSON.stringify(input));
+        addLandlord(landlordJSON);
+        return landlordJSON || new ValidationError('landlord not added.');
       } catch (error) {
         throw new ApolloError(error);
       }
