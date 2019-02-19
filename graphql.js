@@ -109,6 +109,7 @@ const typeDefs = gql`
     createLandlord(input: LandlordInput, id: String): Landlord
     createMatch(input: MatchInput): Match
     updateTenantContact(input: contactInput, id: String): String
+    updateLandlordContact(input: contactInput, id: String): String
     deleteTenant(input: String): String
     deleteLandlord(input: String): String
   }
@@ -198,11 +199,22 @@ const resolvers = {
       try {
         const contactJSON = JSON.parse(JSON.stringify(input));
         const updatedUser = await updateUserContact(id, contactJSON, 'tenants');
-        return updatedUser || new ValidationError('User not updated');
+        return updatedUser || new ValidationError('Tenant not updated');
       } catch (error) {
         throw new ApolloError(error);
       }
     },
+
+    async updateLandlordContact(_, { id, input }) {
+      try {
+        const contactJSON = JSON.parse(JSON.stringify(input));
+        const updatedUser = await updateUserContact(id, contactJSON, 'landlords');
+        return updatedUser || new ValidationError('Landlord not updated');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+
     async deleteTenant(_, { input }) {
       try {
         deleteUserById(input, 'tenants');
