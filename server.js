@@ -1,4 +1,6 @@
-const { ApolloServer, gql } = require('apollo-server');
+const {
+  ApolloServer, gql, ApolloError, ValidationError,
+} = require('apollo-server');
 const {
   getTenants, getLandLords, getMatchesByLandlord, getMatchesByTenant,
 } = require('./utils');
@@ -25,6 +27,11 @@ const typeDefs = gql`
     bedrooms: Int
     description: String
     images: [String]
+    price: Int
+    petsAllowed: Boolean
+    smokingAllowed: Boolean
+    propertyType: String
+    city: String
   }
   type Landlord {
     id: String
@@ -55,24 +62,42 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
+  // TODO: single tenant/landlord queries
   Query: {
     async tenants() {
-      const tenants = await getTenants();
-      return tenants;
+      try {
+        const tenants = await getTenants();
+        return tenants;
+      } catch (error) {
+        throw new ApolloError(error);
+      }
     },
     async landlords() {
-      const landlords = await getLandLords();
-      return landlords;
+      try {
+        const landlords = await getLandLords();
+        return landlords;
+      } catch (error) {
+        throw new ApolloError(error);
+      }
     },
     async matchesByTenant(_, { tenantId }) {
-      const matches = await getMatchesByTenant(tenantId);
-      return matches;
+      try {
+        const matches = await getMatchesByTenant(tenantId);
+        return matches.length ? matches : new ValidationError('No matches for that tenant.');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
     },
     async matchesByLandlord(_, { landlordId }) {
-      const matches = await getMatchesByLandlord(landlordId);
-      return matches;
+      try {
+        const matches = await getMatchesByLandlord(landlordId);
+        return matches.length ? matches : new ValidationError('No matches for that landlord.');
+      } catch (error) {
+        throw new ApolloError();
+      }
     },
   },
+  // TODO: Add new tenant, add new landlord, make a match
 };
 
 const server = new ApolloServer({
