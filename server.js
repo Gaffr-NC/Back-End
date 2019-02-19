@@ -8,6 +8,7 @@ const {
   getUserById,
   addUser,
   addMatch,
+  deleteUserById,
 } = require('./utils');
 
 const typeDefs = gql`
@@ -102,6 +103,8 @@ const typeDefs = gql`
     createTenant(input: TenantInput): Tenant
     createLandlord(input: LandlordInput): Landlord
     createMatch(input: MatchInput): Match
+    deleteTenant(input: String): String
+    deleteLandlord(input: String): String
   }
 `;
 
@@ -181,6 +184,14 @@ const resolvers = {
         const { landlordId, tenantId } = matchJSON;
         addMatch(landlordId, tenantId);
         return matchJSON;
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+    async deleteTenant(_, { input }) {
+      try {
+        deleteUserById(input, 'tenants');
+        return `deleted user with id ${input}`;
       } catch (error) {
         throw new ApolloError(error);
       }
