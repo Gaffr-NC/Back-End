@@ -9,6 +9,7 @@ const {
   addMatch,
   updateUserContact,
   updateProperty,
+  updatePreferences,
   deleteUserById,
 } = require('../utils');
 
@@ -110,6 +111,14 @@ const resolvers = {
       try {
         const updatedProperty = await updateProperty(id, input);
         return updatedProperty || new ValidationError('Property not updated');
+      } catch (error) {
+        throw new ApolloError(error);
+      }
+    },
+    async updateTenantPreferences(_, { id, input }) {
+      try {
+        const updatedPreferences = await updatePreferences(id, input);
+        return updatedPreferences || new ValidationError('Preferences not updated');
       } catch (error) {
         throw new ApolloError(error);
       }

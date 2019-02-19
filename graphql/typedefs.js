@@ -98,6 +98,7 @@ const typeDefs = gql`
     createLandlord(input: LandlordInput, id: String): Landlord
     createMatch(input: MatchInput): Match
     updateTenantContact(input: contactInput, id: String): String
+    updateTenantPreferences(input: TenantPreferences, id: String): String
     updateLandlordContact(input: contactInput, id: String): String
     updateLandlordProperty(input: LandlordProperty, id: String): String
     deleteTenant(input: String): String

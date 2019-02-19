@@ -86,6 +86,20 @@ const updateProperty = async (id, property) => {
   await landlordRef.update(updatedObj);
   return landlordRef.id;
 };
+const updatePreferences = async (id, preferences) => {
+  const keys = Object.keys(preferences).map(key => `preferences.${key}`);
+  const values = Object.values(preferences);
+  const updatedObj = {};
+  keys.forEach((key, index) => {
+    updatedObj[key] = values[index];
+  });
+  const tenantRef = await admin
+    .firestore()
+    .collection('tenants')
+    .doc(id);
+  await tenantRef.update(updatedObj);
+  return tenantRef.id;
+};
 const blockMatch = async (matchId) => {
   admin
     .firestore()
@@ -114,4 +128,5 @@ module.exports = {
   getUserById,
   updateUserContact,
   updateProperty,
+  updatePreferences,
 };
