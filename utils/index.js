@@ -141,6 +141,7 @@ const updateUserContact = async (id, user, table) => {
   await userRef.update(user);
   return userRef.id;
 };
+
 const updateProperty = async (id, property) => {
   const keys = Object.keys(property).map(key => `property.${key}`);
   const values = Object.values(property);
@@ -155,6 +156,7 @@ const updateProperty = async (id, property) => {
   await landlordRef.update(updatedObj);
   return landlordRef.id;
 };
+
 const updatePreferences = async (id, preferences) => {
   const keys = Object.keys(preferences).map(key => `preferences.${key}`);
   const values = Object.values(preferences);
@@ -169,6 +171,7 @@ const updatePreferences = async (id, preferences) => {
   await tenantRef.update(updatedObj);
   return tenantRef.id;
 };
+
 const blockMatch = async (matchId) => {
   admin
     .firestore()
