@@ -1,8 +1,38 @@
+/* eslint-disable camelcase */
 const admin = require('firebase-admin');
 
-const serviceAccount = require('../service-account.json');
+const SERVICE_ACCOUNT = process.env.NODE_ENV !== 'production' ? require('../service-account.json') : '';
 
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+if (process.env.NODE_ENV === 'production') {
+  const {
+    type,
+    project_id,
+    private_key_id,
+    private_key,
+    client_email,
+    client_id,
+    auth_uri,
+    token_uri,
+    auth_provider_x509_cert_url,
+    client_x509_cert_url,
+  } = process.env;
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      type,
+      project_id,
+      private_key_id,
+      private_key,
+      client_email,
+      client_id,
+      auth_uri,
+      token_uri,
+      auth_provider_x509_cert_url,
+      client_x509_cert_url,
+    }),
+  });
+} else {
+  admin.initializeApp({ credential: admin.credential.cert(SERVICE_ACCOUNT) });
+}
 
 const getUsers = async (table) => {
   const users = await admin
